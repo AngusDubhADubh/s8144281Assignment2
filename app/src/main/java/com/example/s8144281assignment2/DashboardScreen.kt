@@ -21,39 +21,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.s8144281assignment2.api.Entity
 import com.example.s8144281assignment2.api.RetrofitInstance
+import com.example.s8144281assignment2.viewmodel.DashboardViewModel
 
 @Composable
-fun DashboardScreen(keypass: String, onEntityClick: (Int) -> Unit) {
-    var entities by remember { mutableStateOf<List<Entity>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf("") }
+fun DashboardScreen(onEntityClick: (Int) -> Unit, viewModel: DashboardViewModel = hiltViewModel()) {
+//    var entities by remember { mutableStateOf<List<Entity>>(emptyList()) }
+//    var isLoading by remember { mutableStateOf(true) }
+//    var error by remember { mutableStateOf("") }
 
     // Runs once when this screen first appears
-    LaunchedEffect(Unit) {
-        try {
-            val response = RetrofitInstance.api.getDashboard(keypass)
-            if (response.isSuccessful) {
-                entities = response.body()?.entities ?: emptyList()
-            } else {
-                error = "Failed to load data (code ${response.code()})"
-            }
-        } catch (e: Exception) {
-            error = "Network error: ${e.localizedMessage}"
-        }
-        isLoading = false
-    }
+
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        if (isLoading) {
+        if (viewModel.isLoading) {
             CircularProgressIndicator()
-        } else if (error.isNotEmpty()) {
-            Text(error)
+        } else if (viewModel.error.isNotEmpty()) {
+            Text(viewModel.error)
         } else {
             //lazy column instead of recycler view
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                itemsIndexed(entities) { index, entity ->
+                itemsIndexed(viewModel.entities) { index, entity ->
                     EntityCard(entity, onClick = { onEntityClick(index) })
                 }
                 }

@@ -18,29 +18,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.s8144281assignment2.api.Entity
 import com.example.s8144281assignment2.api.RetrofitInstance
+import com.example.s8144281assignment2.viewmodel.DetailsViewModel
 
 @Composable
-fun DetailsScreen(keypass: String, index: Int) {
-    var entity by remember { mutableStateOf<Entity?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf("") }
+fun DetailsScreen(viewModel: DetailsViewModel = hiltViewModel()) {
+//    var entity by remember { mutableStateOf<Entity?>(null) }
+//    var isLoading by remember { mutableStateOf(true) }
+//    var error by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-        try {
-            val response = RetrofitInstance.api.getDashboard(keypass)
-            if (response.isSuccessful) {
-                // take only the item that was tapped
-                entity = response.body()?.entities?.getOrNull(index)
-            } else {
-                error = "Failed to load data (code ${response.code()})"
-            }
-        } catch (e: Exception) {
-            error = "Network error: ${e.localizedMessage}"
-        }
-        isLoading = false
-    }
 
     Column(
         modifier = Modifier
@@ -48,12 +36,12 @@ fun DetailsScreen(keypass: String, index: Int) {
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        val item = entity
+        val item = viewModel.entity
 
-        if (isLoading) {
+        if (viewModel.isLoading) {
             CircularProgressIndicator()
-        } else if (error.isNotEmpty()) {
-            Text(error)
+        } else if (viewModel.error.isNotEmpty()) {
+            Text(viewModel.error)
         } else if (item == null) {
             Text("Item not found")
         } else {
