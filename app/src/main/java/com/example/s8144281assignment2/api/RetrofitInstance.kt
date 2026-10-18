@@ -10,10 +10,10 @@ object RetrofitInstance {
     // Must end with a "/"
     private const val BASE_URL = "https://nit3213apinew.onrender.com/"
 
-    // The free server can take about a minute to wake up, so allow long timeouts.
+    // gives time for server to wakeup if down
     private val client = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
+        .connectTimeout(180, TimeUnit.SECONDS)
+        .readTimeout(180, TimeUnit.SECONDS)
         .build()
 
     val api: ApiInterface = Retrofit.Builder()

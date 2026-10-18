@@ -57,4 +57,5 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.14.0")
     implementation ("com.squareup.retrofit2:retrofit:3.0.0")
     implementation ("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("androidx.navigation:navigation-compose:2.10.2")
 }

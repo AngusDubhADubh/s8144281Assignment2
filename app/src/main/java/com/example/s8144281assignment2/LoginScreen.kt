@@ -24,14 +24,14 @@ import com.example.s8144281assignment2.api.RetrofitInstance
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onLoginSuccess: (String) -> Unit) {
     // Values that Compose watches. When they change, the screen redraws.
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
-    // Lets us start a coroutine from the button click
+    // Start a coroutine from the button click
     val scope = rememberCoroutineScope()
 
     Column(
@@ -64,14 +64,20 @@ fun LoginScreen() {
                 message = ""
                 scope.launch {
                     try {
+
                         // Send username + password to the API
                         val response = RetrofitInstance.api.login(
                             LoginRequest(username.trim(), password)
                         )
-                        message = if (response.isSuccessful) {
-                            "Success! keypass = ${response.body()?.keypass}"
+                        if (response.isSuccessful) {
+                            val keypass = response.body()?.keypass      // 1. save it in a variable
+                            if (keypass != null) {
+                                onLoginSuccess(keypass)                 // 2. tell the app to move on
+                            } else {
+                                message = "Login failed: no keypass returned"   // 3. otherwise show an error
+                            }
                         } else {
-                            "Login failed (code ${response.code()})"
+                            message = "Login failed (code ${response.code()})"
                         }
                     } catch (e: Exception) {
                         // No internet, timeout, etc.
