@@ -21,7 +21,17 @@ fun AppNavigation() {
 
         composable("dashboard/{keypass}") { backStackEntry ->
             val keypass = backStackEntry.arguments?.getString("keypass") ?: ""
-            DashboardScreen(keypass)
+            DashboardScreen(
+                keypass = keypass,
+                onEntityClick = { index -> navController.navigate("details/$keypass/$index") }
+            )
+        }
+
+        composable("details/{keypass}/{index}") { backStackEntry ->
+            val keypass = backStackEntry.arguments?.getString("keypass") ?: ""
+            val index = backStackEntry.arguments?.getString("index")?.toInt() ?: 0
+            DetailsScreen(keypass, index)
         }
     }
 }
+

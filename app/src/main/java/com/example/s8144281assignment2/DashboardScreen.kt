@@ -1,9 +1,17 @@
 package com.example.s8144281assignment2.ui
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,7 +25,7 @@ import com.example.s8144281assignment2.api.Entity
 import com.example.s8144281assignment2.api.RetrofitInstance
 
 @Composable
-fun DashboardScreen(keypass: String) {
+fun DashboardScreen(keypass: String, onEntityClick: (Int) -> Unit) {
     var entities by remember { mutableStateOf<List<Entity>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf("") }
@@ -43,7 +51,25 @@ fun DashboardScreen(keypass: String) {
         } else if (error.isNotEmpty()) {
             Text(error)
         } else {
-            Text("Loaded ${entities.size} artworks")
+            //lazy column instead of recycler view
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                itemsIndexed(entities) { index, entity ->
+                    EntityCard(entity, onClick = { onEntityClick(index) })
+                }
+                }
+            }
+        }
+    }
+
+
+@Composable
+fun EntityCard(entity: Entity, onClick: () -> Unit) {
+    Card(modifier = Modifier.fillMaxWidth().clickable { onClick() }) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = entity.artworkTitle, style = MaterialTheme.typography.titleMedium)
+            Text(text = "____")   // show the artist
+            Text(text = "____")   // show the medium
+            Text(text = "____")   // show the year
         }
     }
 }
