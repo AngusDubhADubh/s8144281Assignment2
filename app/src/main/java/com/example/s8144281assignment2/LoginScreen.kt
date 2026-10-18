@@ -19,20 +19,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.s8144281assignment2.api.LoginRequest
 import com.example.s8144281assignment2.api.RetrofitInstance
+import com.example.s8144281assignment2.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(onLoginSuccess: (String) -> Unit) {
+fun LoginScreen(onLoginSuccess: (String) -> Unit, viewModel: LoginViewModel = hiltViewModel()) {
     // Values that Compose watches. When they change, the screen redraws.
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var message by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
+//    var username by remember { mutableStateOf("") }
+//    var password by remember { mutableStateOf("") }
+//    var message by remember { mutableStateOf("") }
+//    var isLoading by remember { mutableStateOf(false) }
 
     // Start a coroutine from the button click
-    val scope = rememberCoroutineScope()
+    //val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -40,16 +42,16 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = username,
-            onValueChange = { username = it },
+            value = viewModel.username,
+            onValueChange = { viewModel.username = it },
             label = { Text("Username (student ID)") },
             singleLine = true
         )
         Spacer(Modifier.height(12.dp))
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = password,
-            onValueChange = { password = it },
+            value = viewModel.password,
+            onValueChange = { viewModel.password = it },
             label = { Text("Password (first name)") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
@@ -58,39 +60,13 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            onClick = {
-                isLoading = true
-                message = ""
-                scope.launch {
-                    try {
-
-                        // Send username + password to the API
-                        val response = RetrofitInstance.api.login(
-                            LoginRequest(username.trim(), password)
-                        )
-                        if (response.isSuccessful) {
-                            val keypass = response.body()?.keypass      // 1. save it in a variable
-                            if (keypass != null) {
-                                onLoginSuccess(keypass)                 // 2. tell the app to move on
-                            } else {
-                                message = "Login failed: no keypass returned"   // 3. otherwise show an error
-                            }
-                        } else {
-                            message = "Login failed (code ${response.code()})"
-                        }
-                    } catch (e: Exception) {
-                        // No internet, timeout, etc.
-                        message = "Network error: ${e.localizedMessage}"
-                    }
-                    isLoading = false
-                }
-            }
+            enabled = !viewModel.isLoading,
+            onClick = { viewModel.login(onLoginSuccess) }
         ) {
-            Text(if (isLoading) "Logging in..." else "Login")
+            Text(if (viewModel.isLoading) "Logging in..." else "Login")
         }
 
         Spacer(Modifier.height(16.dp))
-        Text(message)
+        Text(viewModel.message)
     }
 }
