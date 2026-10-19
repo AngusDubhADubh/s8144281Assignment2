@@ -1,0 +1,65 @@
+# s8144281Assignment2
+
+This is my submission for the NIT3213 final assignment. It's an Android app with
+three screens (Login, Dashboard and Details) that gets its data from the
+nit3213api (https://nit3213apinew.onrender.com).
+
+# Overview
+
+You log in with my student ID and first name (8144281, Angus). The app then loads a list of
+artworks from the API, and you can tap any of them to see the full details.
+
+- Login: sends your details to the API. If something goes wrong, such as a
+  wrong password or no internet, a message appears on the screen.
+- Dashboard: shows each artwork as a card with its title, artist, medium and
+  year.
+- Details: shows everything about one artwork, including its description.
+
+Each screen asks the API for fresh data when it opens, so nothing is stored on
+the phone.
+
+# Technologies
+
+The app is written in Kotlin and uses Jetpack Compose for the user interface, so
+the screens are built with Compose functions instead of XML layouts. Because of
+that, the list on the Dashboard is a `LazyColumn` rather than a RecyclerView. It
+works the same way, only drawing the rows on screen and reusing them as you
+scroll, and each card opens the Details screen when it is tapped. Moving between
+screens is handled with Navigation Compose.
+I used Jetpack compose because I found tutorials online covering these concepts to
+be much clearer than the XML layout ones and easier to impliment.
+
+Other libraries used:
+
+- Hilt for dependency injection
+- Retrofit for the API calls
+- JUnit for the unit tests
+
+The screens only display things. The ViewModels keep track of what the screen
+needs, and the repository is the one place that talks to the API. Hilt provides
+the API and repository to the classes that need them, which also lets the tests
+use a fake version of the API.
+
+# Running the app
+
+1. Open the project in Android Studio and wait for Gradle to finish syncing.
+2. Choose an emulator or a connected device. I used the default Medium Phone.
+3. Press Run.
+4. Log in with my student ID and first name for credentials (8144281, Angus)
+
+As the API is hosted on a free server, the first request can be slow if the
+server has gone to sleep. It may take up to 2-3 minutes, and the app will wait for
+it.
+
+# Tests
+
+The unit tests are in `app/src/test`. They cover the repository and the three
+ViewModels, including cases like a wrong password or no internet connection.
+They use a fake API, so they run without a network connection. To run them,
+right-click the test folder and choose Run Tests, or use `./gradlew test`.
+
+# Version control
+
+I used Git while building the app, but my commits were only saved on my own
+computer. I've added a screenshot of the commit history to the project in the
+dropbox so the progress can be seen.
